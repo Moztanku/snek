@@ -1,12 +1,13 @@
 /**
  * @file main.cpp
- * 
+ *
  * @brief Starting point of the snek game, contains the main loop.
- * 
+ *
  * @authors Jacek Zub
  */
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
+
 
 #include <print>
 #include <cstdint>
@@ -15,6 +16,10 @@
 
 auto pool_events(sf::Window& window) -> void;
 auto draw_something(sf::RenderWindow& window) -> void;
+auto draw_rectangle(sf::RenderWindow& window) -> void;
+auto draw_triangle(sf::RenderWindow& window) -> void;
+auto center_window_on_screen(sf::RenderWindow & window) -> void;
+
 
 auto main() -> int32_t {
     auto window = sf::RenderWindow(
@@ -23,13 +28,15 @@ auto main() -> int32_t {
 
     window.setFramerateLimit(snek::FRAMERATE_LIMIT);
 
+    center_window_on_screen(window);
+
     while (window.isOpen()) {
         pool_events(window);
 
         window.clear(sf::Color::Black);
 
-        draw_something(window);
-
+        draw_rectangle(window);
+        draw_triangle(window);
         window.display();
     }
 
@@ -42,9 +49,8 @@ auto pool_events(sf::Window& window) -> void {
             window.close();
         }
         else if (event->is<sf::Event::KeyPressed>()) {
-            const auto& key_code = event->getIf<sf::Event::KeyPressed>()->code;
-
-            if (key_code == sf::Keyboard::Key::Escape) {
+            if (const auto& key_code = event->getIf<sf::Event::KeyPressed>()->code;
+                key_code == sf::Keyboard::Key::Escape) {
                 window.close();
             }
             else {
@@ -54,9 +60,8 @@ auto pool_events(sf::Window& window) -> void {
     }
 }
 
-auto draw_something(sf::RenderWindow& window) -> void {
+auto draw_rectangle(sf::RenderWindow& window) -> void {
     sf::RectangleShape rect;
-
     rect.setSize({400.f, 300.f});
     rect.setOrigin({
         200.f,
@@ -67,6 +72,32 @@ auto draw_something(sf::RenderWindow& window) -> void {
         snek::WINDOW_HEIGHT / 2.f
     });
     rect.setFillColor(sf::Color::Green);
-
     window.draw(rect);
+}
+
+auto draw_triangle(sf::RenderWindow& window) -> void {
+    // create an array of 3 vertices that define a triangle primitive
+    sf::VertexArray triangle(sf::PrimitiveType::Triangles, 3);
+
+    // define the position of the triangle's points
+    triangle[0].position = sf::Vector2f(200.f, 150.f);
+    triangle[1].position = sf::Vector2f(600.f, 150.f);
+    triangle[2].position = sf::Vector2f(600.f, 450.f);
+
+    // define the color of the triangle's points
+    triangle[0].color = sf::Color::Red;
+    triangle[1].color = sf::Color::Blue;
+    triangle[2].color = sf::Color::Green;
+
+    window.draw(triangle);
+}
+
+auto center_window_on_screen(sf::RenderWindow & window) -> void {
+    const auto desktop = sf::VideoMode::getDesktopMode();
+    const size_t window_width = window.getSize().x;
+    const size_t window_height = window.getSize().y;
+    const int center_width = static_cast<int>(desktop.size.x - window_width) / 2;
+    const int center_height = static_cast<int>(desktop.size.y - window_height) / 2;
+
+    window.setPosition({center_width, center_height});
 }

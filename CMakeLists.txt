@@ -58,7 +58,8 @@ FetchContent_Declare(SFML
 FetchContent_MakeAvailable(SFML)
 
 # Executable target
-add_executable(${PROJECT_NAME})
+add_executable(${PROJECT_NAME}
+        inc/snek/game_objects/game_object.h)
 
 ## source and header files
 target_sources(${PROJECT_NAME} PRIVATE ${SOURCES})

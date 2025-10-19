@@ -2,7 +2,6 @@
 // Created by adame on 10/18/2025.
 //
 
-#include "topology.h"
+#include "snek/game_objects/topology/topology.h"
 
-namespace top {
-} // top
+//top::topology::

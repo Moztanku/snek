@@ -59,7 +59,10 @@ FetchContent_MakeAvailable(SFML)
 
 # Executable target
 add_executable(${PROJECT_NAME}
-        inc/snek/game_objects/game_object.h)
+        inc/snek/game_objects/game_object.h
+        inc/snek/events/input_manager.h # todo delete headers from here
+        inc/snek/events/event_bus.h
+)
 
 ## source and header files
 target_sources(${PROJECT_NAME} PRIVATE ${SOURCES})

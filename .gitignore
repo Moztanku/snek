@@ -42,3 +42,8 @@
 
 # build directory
 build/
+cmake-build-debug/
+cmake-build-release/
+
+# idea
+.idea/

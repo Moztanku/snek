@@ -33,6 +33,18 @@ public:
             if (key_press_event->code == sf::Keyboard::Key::Escape) {
                 event_bus.publish("PAUSE_GAME", PauseGameEvent{});
             }
+            else if (key_press_event->code == sf::Keyboard::Key::W) {
+                event_bus.publish("MOVE_KEY_PRESSED", MoveGameEvent({0, 1 }));
+            }
+            else if (key_press_event->code == sf::Keyboard::Key::S) {
+                event_bus.publish("MOVE_KEY_PRESSED", MoveGameEvent({0, -1}));
+            }
+            else if (key_press_event->code == sf::Keyboard::Key::A) {
+                event_bus.publish("MOVE_KEY_PRESSED", MoveGameEvent({-1, 0}));
+            }
+            else if (key_press_event->code == sf::Keyboard::Key::D) {
+                event_bus.publish("MOVE_KEY_PRESSED", MoveGameEvent({1, 0}));
+            }
             else {
                 std::println("Key pressed: {}", static_cast<int>(key_press_event->code));
             }

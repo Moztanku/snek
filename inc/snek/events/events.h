@@ -7,6 +7,9 @@
 
 #include <SFML/System/Vector2.hpp>
 
+struct MoveGameEvent {
+    sf::Vector2i move_vector;
+};
 struct PauseGameEvent {};
 struct WindowClosedEvent {};
 struct GridClickEvent {

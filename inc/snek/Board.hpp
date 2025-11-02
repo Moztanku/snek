@@ -8,13 +8,14 @@
 #include <vector>
 #include <random>
 
+#include "snek/ILayer.hpp"
 #include "snek/utils.hpp"
 #include "snek/Snake.hpp"
 #include "snek/Input.hpp"
 
 namespace snek {
 
-class Board {
+class Board : public ILayer {
 public:
     Board() {
         // Initial fruit spawn
@@ -27,7 +28,7 @@ public:
         GameOver
     };
 
-    auto update(InputAction action) -> void {
+    auto update(InputAction action) -> void override {
         if (m_state != State::Playing) {
             return;
         }
@@ -46,6 +47,12 @@ public:
         m_snake.move();
 
         handle_collision();
+    }
+
+    auto render(Renderer& renderer) const -> void override {
+        for (const auto* entity : getEntities()) {
+            renderer.draw(entity);
+        }
     }
 
     auto getState() const -> State {

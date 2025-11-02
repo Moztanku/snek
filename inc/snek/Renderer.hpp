@@ -56,6 +56,28 @@ public:
         m_window.draw(sprite);
     }
 
+    struct DrawTextProps {
+        const std::string& text;
+        sf::Vector2f position{5.f, 5.0f};
+        uint32_t characterSize{20u};
+        sf::Color fillColor{sf::Color::White};
+    };
+    auto drawText(const DrawTextProps& props) -> void {
+        static std::unique_ptr<sf::Font> font{nullptr};
+
+        if (!font) {
+            font = std::make_unique<sf::Font>("res/arial.ttf");
+        }
+
+        sf::Text text(*font, props.text);
+
+        text.setCharacterSize(props.characterSize);
+        text.setFillColor(props.fillColor);
+        text.setPosition(props.position);
+
+        m_window.draw(text);
+    }
+
     auto debugText(const std::vector<std::string>& lines) -> void {
         static std::unique_ptr<sf::Font> font{nullptr};
 

@@ -14,6 +14,7 @@
 #include "snek/Snake.hpp"
 #include "snek/Board.hpp"
 #include "snek/Input.hpp"
+#include "snek/Menu.hpp"
 
 auto main() -> int32_t {
     auto window = sf::RenderWindow(
@@ -23,29 +24,44 @@ auto main() -> int32_t {
     window.setFramerateLimit(snek::FRAMERATE_LIMIT);
 
     snek::Renderer renderer{window};
+
     snek::Board board;
+    snek::Menu main_menu;
+    snek::Menu options_menu;
+    snek::ILayer* current_layer = &main_menu;
+
+    main_menu = snek::createMainMenu(
+        &current_layer,
+        &board,
+        &options_menu,
+        window
+    );
+    options_menu = snek::createOptionsMenu(
+        &current_layer,
+        &main_menu
+    );
 
     while (window.isOpen()) {
         const auto action = snek::poll_events(window);
 
-        board.update(action);
+        current_layer->update(action);
 
         renderer.beginFrame();
 
-        for (const auto* entity : board.getEntities()) {
-            renderer.draw(entity);
-        }
+        current_layer->render(renderer);
 
-        std::vector<std::string> debug_lines;
-        for (const auto* entity : board.getEntities()) {
-            std::string line = 
-                "Pos: (" + std::to_string(static_cast<int32_t>(entity->position.x)) + ", " +
-                std::to_string(static_cast<int32_t>(entity->position.y)) + ") Dir: " +
-                std::to_string(static_cast<int32_t>(entity->direction));
+        if (current_layer == &board) {
+            std::vector<std::string> debug_lines;
+            for (const auto* entity : board.getEntities()) {
+                std::string line = 
+                    "Pos: (" + std::to_string(static_cast<int32_t>(entity->position.x)) + ", " +
+                    std::to_string(static_cast<int32_t>(entity->position.y)) + ") Dir: " +
+                    std::to_string(static_cast<int32_t>(entity->direction));
 
-            debug_lines.push_back(std::move(line));
+                debug_lines.push_back(std::move(line));
+            }
+            renderer.debugText(debug_lines);
         }
-        renderer.debugText(debug_lines);
 
         renderer.endFrame();
     }

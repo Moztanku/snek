@@ -14,6 +14,8 @@
 namespace snek {
 
 enum class InputAction {
+    Forward,
+    Backward,
     TurnLeft,
     TurnRight,
     Exit,
@@ -35,6 +37,12 @@ auto poll_events(sf::Window& window) -> InputAction {
             const auto& key_code = event->getIf<KeyPressed>()->code;
 
             switch (key_code) {
+                case Key::W:
+                case Key::Up:
+                    return InputAction::Forward;
+                case Key::S:
+                case Key::Down:
+                    return InputAction::Backward;
                 case Key::A:
                 case Key::Left:
                     return InputAction::TurnLeft;

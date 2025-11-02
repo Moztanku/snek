@@ -50,6 +50,15 @@ public:
     }
 
     auto render(Renderer& renderer) const -> void override {
+        const sf::Vector2f BOARD_SIZE = {
+            m_width * snek::TILE_SIZE,
+            m_height * snek::TILE_SIZE
+        };
+
+        sf::View view(BOARD_SIZE / 2.f, BOARD_SIZE);
+
+        renderer.setView(view);
+
         for (const auto* entity : getEntities()) {
             renderer.draw(entity);
         }

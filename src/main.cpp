@@ -17,11 +17,8 @@
 #include "snek/Menu.hpp"
 
 auto main() -> int32_t {
-    auto window = sf::RenderWindow(
-        sf::VideoMode({snek::WINDOW_WIDTH, snek::WINDOW_HEIGHT}),
-        snek::WINDOW_TITLE);
-
-    window.setFramerateLimit(snek::FRAMERATE_LIMIT);
+    sf::RenderWindow window;
+    snek::createWindow(window);
 
     snek::Renderer renderer{window};
 
@@ -38,7 +35,8 @@ auto main() -> int32_t {
     );
     options_menu = snek::createOptionsMenu(
         &current_layer,
-        &main_menu
+        &main_menu,
+        window
     );
 
     while (window.isOpen()) {

@@ -23,17 +23,9 @@ class Renderer {
 public:
     Renderer(sf::RenderWindow& window)
         : m_window(window)
-    {
-        auto view = m_window.getView();
+    {}
 
-        constexpr sf::Vector2f BOARD_SIZE = {
-            40 * snek::TILE_SIZE,
-            30 * snek::TILE_SIZE
-        };
-
-        view.setSize(BOARD_SIZE);
-        view.setCenter(BOARD_SIZE / 2.f);
-
+    auto setView(const sf::View& view) -> void {
         m_window.setView(view);
     }
 

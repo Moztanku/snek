@@ -8,15 +8,16 @@
 #pragma once
 
 #include <functional>
+#include <map>
 
 #include "snek/utils.hpp"
 #include "snek/ILayer.hpp"
 
 namespace snek {
 
-class Menu : public ILayer {
+class Menu final : public ILayer {
 public:
-    auto update(InputAction action) -> void override {
+    auto update(const InputAction action) -> void override {
         switch (action) {
             case InputAction::Forward:
                 if (m_selectedIndex > 0) {
@@ -76,10 +77,10 @@ private:
         virtual auto getText() const -> std::string = 0;
     };
 
-    struct Button : IItem {
+    struct Button final : IItem {
         Button(
             const std::string& text,
-            std::function<void()> onSelect
+            const std::function<void()>& onSelect
         )
             : m_text(text)
             , m_onSelect(onSelect)
@@ -97,11 +98,11 @@ private:
         std::function<void()> m_onSelect;
     };
 
-    struct Toggle : IItem {
+    struct Toggle final : IItem {
         Toggle(
             const std::string& text,
             const std::vector<std::string>& options,
-            std::function<void(const std::string&)> onSelect
+            const std::function<void(const std::string&)>& onSelect
         )
             : text(text)
             , options(options)
@@ -127,7 +128,7 @@ private:
     size_t m_selectedIndex{0u};
 }; // class Menu
 
-auto createMainMenu(
+inline auto createMainMenu(
     ILayer** current_layer,
     ILayer* game_layer,
     ILayer* options_layer,
@@ -150,27 +151,51 @@ auto createMainMenu(
     return menu;
 }
 
-auto createOptionsMenu(
+inline auto createOptionsMenu(
     ILayer** current_layer,
     ILayer* main_menu_layer,
     sf::Window& window
 ) -> Menu {
     Menu menu;
 
+    const std::vector<std::pair<std::string, Resolution>> resolution_option_list = {
+    {"Fullscreen", Resolution::FULLSCREEN},
+    {"800x600", Resolution::SMALL},
+    {"1280x960", Resolution ::MEDIUM},
+    {"1600x1200", Resolution::LARGE}
+    };
+    const std::map resolution_options(resolution_option_list.begin(), resolution_option_list.end());
+    const std::vector<std::string> resolution_option_names = resolution_option_list
+        | std::views::transform([](const auto& p) { return p.first; })
+        | std::ranges::to<std::vector>();
+
+    const auto update_resolution = [resolution_options, &window](const std::string& option) {
+        sf::VideoMode mode;
+        auto state = sf::State::Windowed;
+
+        switch (resolution_options.at(option)) {
+            case Resolution::SMALL:
+                mode = sf::VideoMode({800, 600}); break;
+            case Resolution::MEDIUM:
+                mode = sf::VideoMode({1280, 960}); break;
+            case Resolution::LARGE:
+                mode =  sf::VideoMode({1600, 1200}); break;
+            case Resolution::FULLSCREEN:
+            default:
+                mode = sf::VideoMode::getDesktopMode();
+                state = sf::State::Fullscreen;
+        }
+
+        createWindow(window, mode, state);
+    };
+
     menu.addToggle(
         "Resolution",
-        {"800x600", "1024x768", "1280x960", "1440x1080", "1600x1200"},
-        [&window](const std::string& option) {
-            const sf::VideoMode mode =
-                option == "800x600" ? sf::VideoMode({800, 600}) :
-                option == "1024x768" ? sf::VideoMode({1024, 768}) :
-                option == "1280x960" ? sf::VideoMode({1280, 960}) :
-                option == "1440x1080" ? sf::VideoMode({1440, 1080}) :
-                sf::VideoMode({1600, 1200});
-
-                createWindow(window, mode);
-        }
+        resolution_option_names,
+        update_resolution
     );
+
+    update_resolution(resolution_option_names[0]);
 
     menu.addButton("Back", [current_layer, main_menu_layer](){
         *current_layer = main_menu_layer;

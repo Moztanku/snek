@@ -33,7 +33,10 @@ class Snake {
         std::shared_ptr<Pivot> next_pivot{nullptr};
     };
 public:
-    Snake(uint32_t initial_len = SNAKE_INITIAL_LENGTH, sf::Vector2f start_pos = {WINDOW_WIDTH / 2.f, WINDOW_HEIGHT / 2.f}) {
+    Snake(
+        uint32_t initial_len = SNAKE_INITIAL_LENGTH,
+        sf::Vector2f start_pos = {WINDOW_WIDTH / 2.f, WINDOW_HEIGHT / 2.f}
+    ) {
         for (uint32_t i = 0u; i < initial_len; i++) {
             Segment segment;
             auto& entity = segment.entity;
@@ -43,7 +46,7 @@ public:
                 start_pos.y + i * snek::TILE_SIZE};
             entity.size = {snek::TILE_SIZE, snek::TILE_SIZE};
             entity.direction = Direction::Up;
-            entity.texture = TextureManager::getTexture("res/test.bmp");
+            entity.texture = TextureManager::getTexture(snek::RESPATH_TEST_BMP);
 
             m_segments.push_back(std::move(segment));
         }
@@ -53,7 +56,8 @@ public:
         const auto head_dir = m_segments.front().entity.direction;
 
         turn(static_cast<Direction>(
-            (static_cast<int32_t>(head_dir) + 3) % 4));
+            (static_cast<int32_t>(head_dir) + 3) % 4
+        ));
     }
 
     auto turnRight() -> void {
@@ -74,7 +78,7 @@ public:
 
         entity.size = {snek::TILE_SIZE, snek::TILE_SIZE};
         entity.direction = tail.entity.direction;
-        entity.texture = TextureManager::getTexture("res/test.bmp");
+        entity.texture = TextureManager::getTexture(snek::RESPATH_TEST_BMP);
 
         switch (tail.entity.direction) {
             case Direction::Up:

@@ -6,67 +6,63 @@
  * @authors Jacek Zub
  */
 #include <SFML/Window.hpp>
-#include <SFML/Graphics.hpp>
-
-#include <print>
-#include <cstdint>
 
 #include "snek/constants.hpp"
-
-auto pool_events(sf::Window& window) -> void;
-auto draw_something(sf::RenderWindow& window) -> void;
+#include "snek/Entity.hpp"
+#include "snek/TextureManager.hpp"
+#include "snek/Renderer.hpp"
+#include "snek/Snake.hpp"
+#include "snek/Board.hpp"
+#include "snek/Input.hpp"
+#include "snek/Menu.hpp"
 
 auto main() -> int32_t {
-    auto window = sf::RenderWindow(
-        sf::VideoMode({snek::WINDOW_WIDTH, snek::WINDOW_HEIGHT}),
-        snek::WINDOW_TITLE);
+    sf::RenderWindow window;
+    snek::createWindow(window);
 
-    window.setFramerateLimit(snek::FRAMERATE_LIMIT);
+    snek::Renderer renderer{window};
+
+    snek::Board board;
+    snek::Menu main_menu;
+    snek::Menu options_menu;
+    snek::ILayer* current_layer = &main_menu;
+
+    main_menu = snek::createMainMenu(
+        &current_layer,
+        &board,
+        &options_menu,
+        window
+    );
+    options_menu = snek::createOptionsMenu(
+        &current_layer,
+        &main_menu,
+        window
+    );
 
     while (window.isOpen()) {
-        pool_events(window);
+        const auto action = snek::poll_events(window);
 
-        window.clear(sf::Color::Black);
+        current_layer->update(action);
 
-        draw_something(window);
+        renderer.beginFrame();
 
-        window.display();
+        current_layer->render(renderer);
+
+        if (current_layer == &board) {
+            std::vector<std::string> debug_lines;
+            for (const auto* entity : board.getEntities()) {
+                std::string line = 
+                    "Pos: (" + std::to_string(static_cast<int32_t>(entity->position.x)) + ", " +
+                    std::to_string(static_cast<int32_t>(entity->position.y)) + ") Dir: " +
+                    std::to_string(static_cast<int32_t>(entity->direction));
+
+                debug_lines.push_back(std::move(line));
+            }
+            renderer.debugText(debug_lines);
+        }
+
+        renderer.endFrame();
     }
 
     return 0;
-}
-
-auto pool_events(sf::Window& window) -> void {
-    while (const auto event = window.pollEvent()) {
-        if (event->is<sf::Event::Closed>()) {
-            window.close();
-        }
-        else if (event->is<sf::Event::KeyPressed>()) {
-            const auto& key_code = event->getIf<sf::Event::KeyPressed>()->code;
-
-            if (key_code == sf::Keyboard::Key::Escape) {
-                window.close();
-            }
-            else {
-                std::println("Key pressed: {}", static_cast<int>(key_code));
-            }
-        }
-    }
-}
-
-auto draw_something(sf::RenderWindow& window) -> void {
-    sf::RectangleShape rect;
-
-    rect.setSize({400.f, 300.f});
-    rect.setOrigin({
-        200.f,
-        150.f
-    });
-    rect.setPosition({
-        snek::WINDOW_WIDTH / 2.f,
-        snek::WINDOW_HEIGHT / 2.f
-    });
-    rect.setFillColor(sf::Color::Green);
-
-    window.draw(rect);
 }

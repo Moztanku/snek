@@ -19,3 +19,11 @@ cmake --build build
 ```bash
 ./build/snek_game
 ```
+
+## TODO
+- [ ] Add more features
+- [ ] 2,5D graphics
+- [ ] main-menu
+- [ ] sound effects and music
+- [ ] score system
+- [ ] levels & level editor

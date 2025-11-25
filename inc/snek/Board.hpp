@@ -127,7 +127,9 @@ private:
 
 
         fruit.direction = Direction::Up; // fruits don't have direction, but set to Up by default
-        fruit.texture = TextureManager::getTexture(snek::RESPATH_TEST_BMP);
+        fruit.texture = TextureManager::getTexture("res/assets/snake_sprites.png");
+        fruit.textureIndex = 2u;
+        fruit.rotationOffsetDegrees = 90.f;
 
         m_fruits.push_back(std::move(fruit));
     }

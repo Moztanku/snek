@@ -24,7 +24,7 @@ constexpr float SNAKE_SPEED_INCREMENT = 0.5f * (TILE_SIZE / FRAMERATE_LIMIT); //
 constexpr uint32_t SNAKE_INITIAL_LENGTH = 5u;
 
 // Rendering related
-constexpr int32_t TEXTURE_TILE_SIZE = 32;
+constexpr int32_t TEXTURE_TILE_SIZE = 64;
 
 
 

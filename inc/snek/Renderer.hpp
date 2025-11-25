@@ -11,6 +11,8 @@
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Font.hpp>
 #include <SFML/Graphics/Text.hpp>
+#include <SFML/System/Angle.hpp>
+#include <memory>
 
 #include <print>
 
@@ -38,12 +40,23 @@ public:
 
         sf::Sprite sprite(*entity->texture);
 
-        sprite.setTextureRect(getTextureRect(entity->direction));
-        sprite.setOrigin({
-            entity->size.x / 2.f,
-            entity->size.y / 2.f
+        const auto tileRect = getTextureRect(entity->textureIndex);
+        sprite.setTextureRect(tileRect);
+
+        const sf::Vector2f spriteSize{
+            static_cast<float>(tileRect.size.x),
+            static_cast<float>(tileRect.size.y)
+        };
+
+        sprite.setOrigin(spriteSize / 2.f);
+        sprite.setScale({
+            entity->size.x / spriteSize.x,
+            entity->size.y / spriteSize.y
         });
         sprite.setPosition(entity->position);
+        const float angle = (static_cast<float>(entity->direction) - 1.f) * 90.f
+            + entity->rotationOffsetDegrees;
+        sprite.setRotation(sf::degrees(angle));
 
         m_window.draw(sprite);
     }

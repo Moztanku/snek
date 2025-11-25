@@ -58,7 +58,7 @@ public:
         static std::unique_ptr<sf::Font> font{nullptr};
 
         if (!font) {
-            font = std::make_unique<sf::Font>("res/arial.ttf");
+            font = std::make_unique<sf::Font>(snek::RESPATH_ARIAL_TTF);
         }
 
         sf::Text text(*font, props.text);
@@ -74,7 +74,7 @@ public:
         static std::unique_ptr<sf::Font> font{nullptr};
 
         if (!font) {
-            font = std::make_unique<sf::Font>("res/arial.ttf");
+            font = std::make_unique<sf::Font>(snek::RESPATH_ARIAL_TTF);
         }
 
         float y_offset = 5.f;

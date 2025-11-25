@@ -127,7 +127,7 @@ private:
 
 
         fruit.direction = Direction::Up; // fruits don't have direction, but set to Up by default
-        fruit.texture = TextureManager::getTexture("res/test.bmp");
+        fruit.texture = TextureManager::getTexture(snek::RESPATH_TEST_BMP);
 
         m_fruits.push_back(std::move(fruit));
     }

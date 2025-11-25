@@ -30,10 +30,10 @@ public:
 
         auto texture = std::make_unique<sf::Texture>();
 
-        std::string key{path};
+        std::string_view key{path};
 
         if (!texture->loadFromFile(key)) {
-            std::println(stderr, "Failed to load texture from path: {}", path);
+            //std::println(stderr, "Failed to load texture from path: {}", path);
 
             return nullptr;
         }
@@ -59,7 +59,8 @@ private:
 
     std::unordered_map<
         std::string,
-        std::unique_ptr<sf::Texture>> m_textures;
+        std::unique_ptr<sf::Texture>
+    > m_textures;
 }; // class TextureManager
 
 } // namespace snek

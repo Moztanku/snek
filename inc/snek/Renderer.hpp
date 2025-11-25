@@ -11,7 +11,9 @@
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Font.hpp>
 #include <SFML/Graphics/Text.hpp>
+#include <SFML/Graphics/Drawable.hpp>
 #include <SFML/System/Angle.hpp>
+
 #include <memory>
 
 #include <print>
@@ -68,13 +70,9 @@ public:
         sf::Color fillColor{sf::Color::White};
     };
     auto drawText(const DrawTextProps& props) -> void {
-        static std::unique_ptr<sf::Font> font{nullptr};
+        auto& font = getFont();
 
-        if (!font) {
-            font = std::make_unique<sf::Font>(snek::RESPATH_ARIAL_TTF);
-        }
-
-        sf::Text text(*font, props.text);
+        sf::Text text(font, props.text);
 
         text.setCharacterSize(props.characterSize);
         text.setFillColor(props.fillColor);
@@ -84,17 +82,13 @@ public:
     }
 
     auto debugText(const std::vector<std::string>& lines) -> void {
-        static std::unique_ptr<sf::Font> font{nullptr};
-
-        if (!font) {
-            font = std::make_unique<sf::Font>(snek::RESPATH_ARIAL_TTF);
-        }
+        auto& font = getFont();
 
         float y_offset = 5.f;
         const float x_offset = 5.f;
 
         for (const auto& line : lines) {
-            sf::Text text(*font, line);
+            sf::Text text(font, line);
 
             text.setCharacterSize(20);
             text.setFillColor(sf::Color::White);
@@ -113,7 +107,36 @@ public:
     auto endFrame() -> void {
         m_window.display();
     }
+
+    auto drawDrawable(const sf::Drawable& drawable) -> void {
+        m_window.draw(drawable);
+    }
+
+    auto getWindowSize() const -> sf::Vector2u {
+        return m_window.getSize();
+    }
+
+    auto resetView() -> void {
+        m_window.setView(m_window.getDefaultView());
+    }
+
+    auto getFont() -> sf::Font& {
+        return font();
+    }
 private:
+    static auto font() -> sf::Font& {
+        static std::unique_ptr<sf::Font> font{nullptr};
+
+        if (!font) {
+            font = std::make_unique<sf::Font>();
+            if (!font->openFromFile(snek::RESPATH_ARIAL_TTF)) {
+                std::println(stderr, "Failed to load font: {}", snek::RESPATH_ARIAL_TTF);
+            }
+        }
+
+        return *font;
+    }
+
     sf::RenderWindow& m_window;
 }; // class Renderer
 

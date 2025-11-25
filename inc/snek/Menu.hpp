@@ -7,8 +7,17 @@
  */
 #pragma once
 
+#include <SFML/Graphics/RectangleShape.hpp>
+#include <SFML/Graphics/Text.hpp>
+#include <SFML/Graphics/VertexArray.hpp>
+
 #include <functional>
 #include <map>
+#include <memory>
+#include <string>
+#include <vector>
+#include <algorithm>
+#include <ranges>
 
 #include "snek/utils.hpp"
 #include "snek/ILayer.hpp"
@@ -40,17 +49,72 @@ public:
     }
 
     auto render(Renderer& renderer) const -> void override {
+        renderer.resetView();
+
+        const auto windowSize = renderer.getWindowSize();
+        const sf::Vector2f winSizef{
+            static_cast<float>(windowSize.x),
+            static_cast<float>(windowSize.y)
+        };
+
+        sf::VertexArray background(sf::PrimitiveType::TriangleStrip, 4);
+        const sf::Color topColor(6, 18, 28);
+        const sf::Color bottomColor(20, 54, 30);
+
+        background[0].position = {0.f, 0.f};               background[0].color = topColor;
+        background[1].position = {winSizef.x, 0.f};        background[1].color = topColor;
+        background[2].position = {winSizef.x, winSizef.y}; background[2].color = bottomColor;
+        background[3].position = {0.f, winSizef.y};        background[3].color = bottomColor;
+
+        renderer.drawDrawable(background);
+
+        const uint32_t characterSize = 44u;
+        const float spacing = static_cast<float>(characterSize) + 18.f;
+        const float totalHeight = spacing * static_cast<float>(m_items.size());
+        const float startY = (winSizef.y - totalHeight) / 2.f + static_cast<float>(characterSize) / 2.f;
+
+        const float panelWidth = std::min(winSizef.x - 80.f, 520.f);
+        const float panelHeight = totalHeight + 80.f;
+        sf::RectangleShape panel({panelWidth, panelHeight});
+        panel.setOrigin({panelWidth / 2.f, panelHeight / 2.f});
+        panel.setPosition({winSizef.x / 2.f, winSizef.y / 2.f});
+        panel.setFillColor(sf::Color(8, 18, 10, 190));
+        panel.setOutlineThickness(3.f);
+        panel.setOutlineColor(sf::Color(94, 232, 169, 180));
+        renderer.drawDrawable(panel);
+
+        auto& font = renderer.getFont();
         for (size_t i = 0; i < m_items.size(); i++) {
             const auto& item = m_items[i];
+            const bool selected = i == m_selectedIndex;
+            const float y = startY + static_cast<float>(i) * spacing;
 
-            Renderer::DrawTextProps props{
-                .text = item->getText(),
-                .position = {50.f, 50.f + static_cast<float>(i) * 30.f},
-                .characterSize = 24u,
-                .fillColor = (i == m_selectedIndex) ? sf::Color::Yellow : sf::Color::White
-            };
+            sf::Text text(font, item->getText(), characterSize);
+            text.setStyle(sf::Text::Bold);
+            text.setLetterSpacing(1.08f);
 
-            renderer.drawText(props);
+            const auto bounds = text.getLocalBounds();
+            const float baseWidth = panelWidth * 0.7f;
+            const float highlightWidth = std::max(baseWidth, bounds.size.x + 60.f);
+            const float highlightHeight = static_cast<float>(characterSize) + 22.f;
+
+            text.setOrigin({
+                bounds.position.x + bounds.size.x / 2.f,
+                bounds.position.y + bounds.size.y / 2.f});
+            text.setPosition({winSizef.x / 2.f, y});
+            text.setFillColor(selected ? sf::Color(94, 232, 169) : sf::Color(230, 230, 230));
+            text.setOutlineThickness(selected ? 2.f : 1.f);
+            text.setOutlineColor(sf::Color(0, 0, 0, 200));
+
+            sf::RectangleShape highlight({highlightWidth, highlightHeight});
+            highlight.setOrigin({highlightWidth / 2.f, highlightHeight / 2.f});
+            highlight.setPosition({winSizef.x / 2.f, y});
+            highlight.setFillColor(selected ? sf::Color(20, 60, 36, 220) : sf::Color(0, 0, 0, 120));
+            highlight.setOutlineThickness(selected ? 2.5f : 1.5f);
+            highlight.setOutlineColor(selected ? sf::Color(94, 232, 169, 200) : sf::Color(255, 255, 255, 40));
+
+            renderer.drawDrawable(highlight);
+            renderer.drawDrawable(text);
         }
     }
 

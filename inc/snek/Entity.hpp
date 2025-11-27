@@ -22,8 +22,8 @@ enum class Direction : int32_t {
     Left = 3
 };
 
-auto getTextureRect(Direction direction) -> sf::IntRect {
-    const auto x = static_cast<int32_t>(direction) * snek::TEXTURE_TILE_SIZE;
+auto getTextureRect(uint32_t tileIndex) -> sf::IntRect {
+    const auto x = static_cast<int32_t>(tileIndex) * snek::TEXTURE_TILE_SIZE;
     const auto y = 0;
 
     const auto w = snek::TEXTURE_TILE_SIZE;
@@ -36,6 +36,8 @@ struct Entity {
     sf::Vector2f position;
     sf::Vector2f size;
     Direction direction;
+    uint32_t textureIndex{0u};
+    float rotationOffsetDegrees{0.f};
 
     const sf::Texture* texture;
 };

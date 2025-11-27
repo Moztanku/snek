@@ -46,7 +46,11 @@ public:
                 start_pos.y + i * snek::TILE_SIZE};
             entity.size = {snek::TILE_SIZE, snek::TILE_SIZE};
             entity.direction = Direction::Up;
-            entity.texture = TextureManager::getTexture(snek::RESPATH_TEST_BMP);
+            entity.texture = TextureManager::getTexture("res/assets/snake_sprites.png");
+            entity.textureIndex = (i == 0) ? 0u : 1u; // head uses first tile, body second
+            if (i == 0) {
+                entity.rotationOffsetDegrees = 90.f;
+            }
 
             m_segments.push_back(std::move(segment));
         }
@@ -78,7 +82,8 @@ public:
 
         entity.size = {snek::TILE_SIZE, snek::TILE_SIZE};
         entity.direction = tail.entity.direction;
-        entity.texture = TextureManager::getTexture(snek::RESPATH_TEST_BMP);
+        entity.texture = TextureManager::getTexture("res/assets/snake_sprites.png");
+        entity.textureIndex = 1u;
 
         switch (tail.entity.direction) {
             case Direction::Up:

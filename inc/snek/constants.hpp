@@ -26,21 +26,29 @@ constexpr uint32_t SNAKE_INITIAL_LENGTH = 5u;
 // Rendering related
 constexpr int32_t TEXTURE_TILE_SIZE = 64;
 
-
+// Path prefix
+#define PATH_PREFIX "res/"
 
 // Texture paths
-constexpr std::string PATH_PREFIX = "";
-constexpr std::string RESPATH_TEST_BMP = PATH_PREFIX + "res/test.bmp";
-constexpr std::string RESPATH_ARIAL_TTF = PATH_PREFIX + "res/arial.ttf";
+constexpr std::string_view RESPATH_TEST_BMP = PATH_PREFIX "test.bmp";
+constexpr std::string_view RESPATH_ARIAL_TTF = PATH_PREFIX "arial.ttf";
 
+// Sound paths
+constexpr std::string_view RESPATH_OPTION_WAV = PATH_PREFIX "menu_opcje.wav";
+constexpr std::string_view RESPATH_CONFIRM_WAV = PATH_PREFIX "menu_potwierdzanie.wav";
+constexpr std::string_view RESPATH_TURN_WAV = PATH_PREFIX "efekt_skret.wav";
+constexpr std::string_view RESPATH_EAT_WAV = PATH_PREFIX "efekt_jedzenia.wav";
+constexpr std::string_view RESPATH_DEATH_WAV = PATH_PREFIX "efekt_smierc.wav";
+
+#undef PATH_PREFIX
 
 // Enum resolutions
 enum class Resolution {
     FULLSCREEN,
-    DEFAULT = FULLSCREEN,
     SMALL,
     MEDIUM,
     LARGE,
+    DEFAULT = SMALL,
 };
 
 

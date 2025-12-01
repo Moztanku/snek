@@ -32,10 +32,10 @@ constexpr auto checkCollision(
 inline auto createWindow(
     sf::Window& window,
     const sf::VideoMode& mode = sf::VideoMode{{WINDOW_WIDTH, WINDOW_HEIGHT}},
-    const sf::State state = sf::State::Fullscreen
+    const sf::State state = sf::State::Windowed
 ) -> void {
     window.create(
-        mode,
+        state == sf::State::Fullscreen ? sf::VideoMode::getDesktopMode() : mode,
         WINDOW_TITLE,
         sf::Style::Titlebar | sf::Style::Close,
         state
@@ -47,9 +47,7 @@ inline auto createWindow(
     auto ws = window.getSize();
 
     int posX = (ip.x + ws.x) - dm.x / 2 - ws.x / 2;
-    posX = dm.x / 2 - ws.x / 2;
     int posY = (ip.y + ws.y) - dm.y / 2 - ws.y / 2;
-    posY = dm.y / 2 - ws.y / 2;
 
     window.setPosition({
         posX,

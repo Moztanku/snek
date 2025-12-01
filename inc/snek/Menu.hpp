@@ -21,6 +21,7 @@
 
 #include "snek/utils.hpp"
 #include "snek/ILayer.hpp"
+#include "snek/SoundSystem.hpp"
 
 namespace snek {
 
@@ -29,16 +30,19 @@ public:
     auto update(const InputAction action) -> void override {
         switch (action) {
             case InputAction::Forward:
+                SoundSystem::Play(RESPATH_OPTION_WAV);
                 if (m_selectedIndex > 0) {
                     m_selectedIndex--;
                 }
                 break;
             case InputAction::Backward:
+                SoundSystem::Play(RESPATH_OPTION_WAV);
                 if (m_selectedIndex + 1 < m_items.size()) {
                     m_selectedIndex++;
                 }
                 break;
             case InputAction::TurnRight:
+                SoundSystem::Play(RESPATH_CONFIRM_WAV);
                 if (m_selectedIndex < m_items.size()) {
                     m_items[m_selectedIndex]->select();
                 }
@@ -127,10 +131,11 @@ public:
     auto addToggle(
         const std::string& text,
         const std::vector<std::string>& options,
-        std::function<void(const std::string&)> onSelect
+        std::function<void(const std::string&)> onSelect,
+        const size_t defaultIndex = 0u
     ) -> void {
         m_items.push_back(
-            std::make_unique<Toggle>(text, options, onSelect)
+            std::make_unique<Toggle>(text, options, onSelect, defaultIndex)
         );
     }
 private:
@@ -166,11 +171,13 @@ private:
         Toggle(
             const std::string& text,
             const std::vector<std::string>& options,
-            const std::function<void(const std::string&)>& onSelect
+            const std::function<void(const std::string&)>& onSelect,
+            const size_t defaultIndex
         )
             : text(text)
             , options(options)
             , onSelect(onSelect)
+            , selectedIndex(defaultIndex)
         {}
 
         auto select() -> void override {
@@ -184,8 +191,8 @@ private:
 
         std::string text;
         std::vector<std::string> options;
-        size_t selectedIndex{0u};
         std::function<void(const std::string&)> onSelect;
+        size_t selectedIndex;
     };
 
     std::vector<std::unique_ptr<IItem>> m_items;
@@ -222,11 +229,12 @@ inline auto createOptionsMenu(
 ) -> Menu {
     Menu menu;
 
+    // Resolution toggle
     const std::vector<std::pair<std::string, Resolution>> resolution_option_list = {
-    {"Fullscreen", Resolution::FULLSCREEN},
     {"800x600", Resolution::SMALL},
     {"1280x960", Resolution ::MEDIUM},
-    {"1600x1200", Resolution::LARGE}
+    {"1600x1200", Resolution::LARGE},
+    {"Fullscreen", Resolution::FULLSCREEN}
     };
     const std::map resolution_options(resolution_option_list.begin(), resolution_option_list.end());
     const std::vector<std::string> resolution_option_names = resolution_option_list
@@ -260,6 +268,28 @@ inline auto createOptionsMenu(
     );
 
     update_resolution(resolution_option_names[0]);
+
+    // Volume toggle (0-5 steps)
+    const std::vector<std::string> volume_options = {
+        "X", "=", "==", "===", "====", "====="
+    };
+
+    const auto update_volume = [](const std::string& option) {
+        const int volume_level = option[0] == 'X' ? 0 : static_cast<int>(option.size());
+        const float volume_percentage = static_cast<float>(volume_level) / 5.f * 100.f;
+        SoundSystem::SetVolume(volume_percentage);
+    };
+
+    const auto default_volume_index = 1; // Volume level 1 (20%)
+
+    menu.addToggle(
+        "Volume",
+        volume_options,
+        update_volume,
+        default_volume_index
+    );
+
+    update_volume(volume_options[default_volume_index]);
 
     menu.addButton("Back", [current_layer, main_menu_layer](){
         *current_layer = main_menu_layer;

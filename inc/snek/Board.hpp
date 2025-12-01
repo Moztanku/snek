@@ -12,6 +12,7 @@
 #include "snek/utils.hpp"
 #include "snek/Snake.hpp"
 #include "snek/Input.hpp"
+#include "snek/SoundSystem.hpp"
 
 namespace snek {
 
@@ -35,9 +36,11 @@ public:
 
         switch (action) {
             case InputAction::TurnLeft:
+                SoundSystem::Play(RESPATH_TURN_WAV);
                 m_snake.turnLeft();
                 break;
             case InputAction::TurnRight:
+                SoundSystem::Play(RESPATH_TURN_WAV);
                 m_snake.turnRight();
                 break;
             default:
@@ -144,6 +147,7 @@ private:
                 m_snake.grow();
                 it = m_fruits.erase(it);
                 spawnFruit();
+                SoundSystem::Play(RESPATH_EAT_WAV);
             } else {
                 ++it;
             }
@@ -158,10 +162,20 @@ private:
             };
 
             if (checkCollision(head_collision, {entity->position, entity->size})) {
+                SoundSystem::Play(RESPATH_DEATH_WAV);
                 m_state = State::GameOver;
 
                 return;
             }
+        }
+
+        // Check collision with borders
+        if (head.position.x < 0.f ||
+            head.position.x > m_width * snek::TILE_SIZE ||
+            head.position.y < 0.f ||
+            head.position.y > m_height * snek::TILE_SIZE) {
+            SoundSystem::Play(RESPATH_DEATH_WAV);
+            m_state = State::GameOver;
         }
     }
 }; // class Board

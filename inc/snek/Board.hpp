@@ -39,12 +39,14 @@ public:
 
         switch (action) {
             case InputAction::TurnLeft:
-                SoundSystem::Play(RESPATH_TURN_WAV);
-                m_snake.turnLeft();
+                if (m_snake.turnLeft()) {
+                    SoundSystem::Play(RESPATH_TURN_WAV);
+                }
                 break;
             case InputAction::TurnRight:
-                SoundSystem::Play(RESPATH_TURN_WAV);
-                m_snake.turnRight();
+                if (m_snake.turnRight()) {
+                    SoundSystem::Play(RESPATH_TURN_WAV);
+                }
                 break;
             default:
                 break;

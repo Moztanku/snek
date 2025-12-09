@@ -8,6 +8,7 @@
 #pragma once
 
 #include <cstdint>
+#include <string_view>
 
 namespace snek {
 
@@ -35,7 +36,7 @@ constexpr std::string_view RESPATH_ARIAL_TTF = PATH_PREFIX "arial.ttf";
 
 // Sound paths
 constexpr std::string_view RESPATH_OPTION_WAV = PATH_PREFIX "menu_opcje.wav";
-constexpr std::string_view RESPATH_CONFIRM_WAV = PATH_PREFIX "menu_potwierdzanie.wav";
+constexpr std::string_view RESPATH_CONFIRM_WAV = PATH_PREFIX "menu_potwierdzenie.wav";
 constexpr std::string_view RESPATH_TURN_WAV = PATH_PREFIX "efekt_skret.wav";
 constexpr std::string_view RESPATH_EAT_WAV = PATH_PREFIX "efekt_jedzenia.wav";
 constexpr std::string_view RESPATH_DEATH_WAV = PATH_PREFIX "efekt_smierc.wav";

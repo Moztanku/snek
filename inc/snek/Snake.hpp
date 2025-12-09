@@ -56,18 +56,26 @@ public:
         }
     }
 
-    auto turnLeft() -> void {
+    auto turnLeft() -> bool {
+        if (m_segments.empty()) {
+            return false;
+        }
+
         const auto head_dir = m_segments.front().entity.direction;
 
-        turn(static_cast<Direction>(
+        return turn(static_cast<Direction>(
             (static_cast<int32_t>(head_dir) + 3) % 4
         ));
     }
 
-    auto turnRight() -> void {
+    auto turnRight() -> bool {
+        if (m_segments.empty()) {
+            return false;
+        }
+
         const auto head_dir = m_segments.front().entity.direction;
 
-        turn(static_cast<Direction>(
+        return turn(static_cast<Direction>(
             (static_cast<int32_t>(head_dir) + 1) % 4));
     }
 
@@ -125,13 +133,18 @@ public:
         return entities;
     }
 
-    auto turn(Direction new_direction) -> void {
+    auto turn(Direction new_direction) -> bool {
         if (m_distance_since_last_turn < snek::TILE_SIZE) {
-            return;
+            return false;
         }
-        m_distance_since_last_turn = 0.f;
 
         auto& head = m_segments.front().entity;
+
+        if (head.direction == new_direction) {
+            return false;
+        }
+
+        m_distance_since_last_turn = 0.f;
         head.direction = new_direction;
 
         auto pivot = std::make_shared<Pivot>();
@@ -146,6 +159,8 @@ public:
                 break;
             }
         }
+
+        return true;
     }
 
     auto move() -> void {
